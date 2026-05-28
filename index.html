@@ -176,238 +176,239 @@ header.scrolled{background:rgba(6,6,16,0.9)}
 .chat-trigger:hover { transform: scale(1.08) rotate(5deg); box-shadow: 0 8px 30px rgba(157,78,221,0.6); }
 .chat-window { position: fixed; bottom: 100px; right: 28px; width: 380px; height: 500px; background: var(--bg2); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); z-index: 151; box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; opacity: 0; transform: translateY(20px) scale(0.95); pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .chat-window.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
-.chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-.chat-msg { display: flex; gap: 10px; max-width: 85%; }
-.chat-msg.bot { align-self: flex-start; }
-.chat-msg.user { align-self: flex-end; flex-direction: row-reverse; max-width: 80%; }
-.chat-msg-bubble { background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 10px 14px; font-size: 0.85rem; line-height: 1.5; color: var(--text2); }
-.chat-msg.user .chat-msg-bubble { background: linear-gradient(135deg, rgba(157,78,221,0.15), rgba(0,207,255,0.15)); border-color: rgba(157,78,221,0.3); color: var(--text); }
-.chat-input-area { padding: 12px 20px; background: rgba(13,13,30,0.8); border-top: 1px solid var(--card-border); display: flex; gap: 10px; align-items: center; }
-
-#toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-.toast { background: rgba(6,6,16,0.95); border: 1px solid var(--purple); color: #fff; padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 8px 32px rgba(0,0,0,0.5); backdrop-filter: blur(10px); animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards; }
-.toast.success { border-color: var(--lime); }
-.toast.error { border-color: var(--red); }
-@keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes toastOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
-
-@media(max-width:768px){
-  .pricing-grid{grid-template-columns:1fr}
-  .hero-stats{flex-direction:column; gap:20px;}
-  .chat-window { width: calc(100vw - 32px); height: calc(100vh - 120px); bottom: 90px; right: 16px; }
-}
-</style>
-</head>
-<body>
-
-<div id="toast-container"></div>
-
-<div class="bg-canvas">
-  <canvas id="starfield"></canvas>
-  <div class="mesh-grad m1"></div>
-  <div class="mesh-grad m2"></div>
-  <div class="mesh-grad m3"></div>
-</div>
-
-<header id="mainHeader">
-  <div class="container">
-    <nav class="nav">
-      <div class="logo"><div class="logo-icon">📚</div>StudyVerse</div>
-      <div class="nav-center" id="navLinks">
-        <a href="#" data-cat="science" class="active" onclick="navSwitch('science');return false">Science</a>
-        <a href="#" data-cat="humanities" onclick="navSwitch('humanities');return false">Humanities</a>
-        <a href="#" data-cat="commerce" onclick="navSwitch('commerce');return false">Commerce</a>
-        <a href="#" data-cat="tech" onclick="navSwitch('tech');return false">Technology</a>
-        <a href="#" data-cat="undergrad" onclick="navSwitch('undergrad');return false">🎓 Undergrad</a>
-        <a href="#" data-cat="postgrad" onclick="navSwitch('postgrad');return false">🔬 Master's</a>
-      </div>
-      <div class="nav-right">
-        <button class="search-trigger" onclick="openSearch()">
-          🔍 Search… <kbd>⌘K</kbd>
-        </button>
-        <button class="profile-trigger" id="profileTrigger" onclick="openAuthModal()" title="User Account">
-          <div class="profile-avatar" id="headerAvatar">👤</div>
-          <span class="profile-status-dot" id="headerStatusDot"></span>
-        </button>
-      </div>
-    </nav>
-  </div>
-</header>
-
-<section class="hero">
-  <div class="container">
-    <div class="hero-badge">Free &bull; Comprehensive &bull; Constantly Updated</div>
-    <h1>Learn <span class="grad">Everything</span>,<br>Everywhere.</h1>
-    <p>The ultimate free learning platform covering all Indian curriculums — Arts, Science, Engineering, Business, Rural Studies, and Competitive Exams.</p>
-    <div class="hero-actions">
-      <button class="btn btn-primary" onclick="document.querySelector('.categories').scrollIntoView({behavior:'smooth'})">🚀 Start Learning</button>
-      <button class="btn btn-secondary" onclick="openPricingModal()">💎 View Premium Plans</button>
-    </div>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-value" style="color:var(--lime)" id="cntSubjects">0</div><div class="stat-label">Subjects</div></div>
-      <div class="stat"><div class="stat-value" style="color:var(--blue)" id="cntTopics">0</div><div class="stat-label">Topics</div></div>
-      <div class="stat"><div class="stat-value" style="color:var(--pink)">7</div><div class="stat-label">Categories</div></div>
-    </div>
-  </div>
-</section>
-
-<section class="categories" id="categoriesSection">
-  <div class="container">
-    <div class="section-head">
-      <h2>Explore Curriculum Libraries</h2>
-      <p>Select your field to access perfectly organized syllabi and notes.</p>
-    </div>
-    <div class="cat-tabs" id="catTabs"></div>
-    <div id="catSections"></div>
-  </div>
-</section>
-
-<div class="modal-overlay" id="modalOverlay"></div>
-<div class="modal" id="modal">
-  <div class="modal-progress"><div class="modal-progress-bar" id="modalProgressBar"></div></div>
-  <div class="modal-head">
-    <div class="modal-head-left">
-      <div class="m-icon" id="mIcon"></div>
-      <div class="m-info"><h2 id="mTitle"></h2><p id="mDesc"></p></div>
-    </div>
-    <button class="modal-close" onclick="closeModal()">✕</button>
-  </div>
-  <div class="modal-body" id="mBody"></div>
-</div>
-
-<div class="auth-overlay" id="searchOvl" onclick="if(event.target===this)closeSearch()">
-  <div class="auth-card" style="margin-top: -20vh; max-width: 600px;">
-    <input type="text" id="searchInput" class="auth-input" placeholder="Search any topic (e.g., Quantum Mechanics, Microeconomics)..." oninput="doSearch(this.value)" autocomplete="off" style="font-size: 1.1rem; padding: 16px;">
-    <div id="searchResults" style="max-height: 400px; overflow-y: auto; margin-top: 10px;"></div>
-  </div>
-</div>
-
-<div class="auth-overlay" id="authOverlay" onclick="if(event.target===this)closeAuthModal()">
-  <div class="auth-card">
-    <button class="auth-card-close" onclick="closeAuthModal()">✕</button>
-    
-    <div id="authScreenLogin">
-      <h3 class="auth-title">Welcome Back</h3>
-      <p style="text-align:center; color:var(--text2); margin-bottom: 20px;">Log in to sync your progress</p>
-      <form onsubmit="handleLogin(event)">
-        <label style="font-size: 0.8rem; color:var(--text2);">Mobile Number or Email</label>
-        <input type="text" id="loginId" class="auth-input" placeholder="9876543210 or user@mail.com" required>
-        <button type="submit" class="auth-btn">Log In</button>
-      </form>
-    </div>
-
-    <div id="authScreenProfile" style="display:none; text-align:center;">
-      <div style="font-size:3rem; margin-bottom:10px;">👤</div>
-      <h3 id="profileName" style="font-size:1.5rem; font-family:var(--font-head);">Name</h3>
-      <p id="profileEmail" style="color:var(--text2); font-size:0.9rem; margin-bottom: 20px;">Email</p>
-      <div style="display:inline-block; background:var(--purple); color:#fff; padding:4px 12px; border-radius:100px; font-size:0.8rem; font-weight:700; margin-bottom:20px;" id="profilePlanBadge">FREE</div>
-      
-      <div style="display:flex; justify-content:space-around; background:var(--glass); border-radius:12px; padding:16px; margin-bottom:20px;">
-        <div><h4 style="font-size:1.5rem; color:var(--lime);" id="profileDoneCount">0</h4><p style="font-size:0.7rem; color:var(--text3); text-transform:uppercase;">Topics Done</p></div>
-        <div><h4 style="font-size:1.5rem; color:var(--blue);" id="profilePlanType">Free</h4><p style="font-size:0.7rem; color:var(--text3); text-transform:uppercase;">Current Plan</p></div>
-      </div>
-      
-      <button class="auth-btn" style="background:var(--glass); border:1px solid var(--glass-border); color:var(--text); margin-bottom: 10px;" onclick="openPricingModal(); closeAuthModal();">💎 Upgrade to Premium</button>
-      <button class="auth-btn" style="background:rgba(255,71,87,0.1); color:var(--red);" onclick="handleLogout()">Log Out</button>
-    </div>
-  </div>
-</div>
-
-<div class="pricing-overlay" id="pricingOverlay" onclick="if(event.target===this)closePricingModal()">
-  <div class="pricing-card-wrap">
-    <button class="auth-card-close" onclick="closePricingModal()" style="top:20px; right:20px; position:absolute;">✕</button>
-    <h3 style="font-size: 2.2rem; font-family:var(--font-head); text-align:center;">StudyVerse <span style="color:var(--lime)">Premium</span></h3>
-    <p style="text-align:center; color:var(--text2); margin-bottom:40px;">Unlock AI powers, exports, and offline access.</p>
-    
-    <div class="pricing-grid">
-      <div class="pricing-plan-card">
-        <h4 style="font-size:1.5rem; margin-bottom:10px;">Free Tier</h4>
-        <h2 style="font-size:2.5rem; margin-bottom:20px;">₹0<span style="font-size:1rem; color:var(--text3)">/mo</span></h2>
-        <ul style="list-style:none; line-height:2; color:var(--text2); margin-bottom:30px;">
-          <li>✓ All standard syllabus access</li>
-          <li>✓ Progress Tracking</li>
-          <li>❌ AI Gemini Quizzes</li>
-          <li>❌ PDF Note Export</li>
-        </ul>
-        <button class="btn btn-secondary" style="width:100%" onclick="closePricingModal()">Current Plan</button>
-      </div>
-      <div class="pricing-plan-card" style="border-color:var(--purple); background:rgba(157,78,221,0.05);">
-        <h4 style="font-size:1.5rem; margin-bottom:10px; color:var(--purple);">Pro Member</h4>
-        <h2 style="font-size:2.5rem; margin-bottom:20px;">₹499<span style="font-size:1rem; color:var(--text3)">/mo</span></h2>
-        <ul style="list-style:none; line-height:2; color:var(--text2); margin-bottom:30px;">
-          <li>✓ Everything in Free</li>
-          <li style="color:var(--lime)">✓ Unlimited AI Quizzes & Summaries</li>
-          <li style="color:var(--lime)">✓ PDF Export Notes</li>
-          <li style="color:var(--lime)">✓ Live Premium YouTube Search</li>
-        </ul>
-        <button class="btn btn-primary" style="width:100%" onclick="selectPlan('Pro', 499)">Upgrade to Pro</button>
-      </div>
-      <div class="pricing-plan-card" style="border-color:var(--blue); background:rgba(0,207,255,0.05);">
-        <h4 style="font-size:1.5rem; margin-bottom:10px; color:var(--blue);">Pro Max</h4>
-        <h2 style="font-size:2.5rem; margin-bottom:20px;">₹999<span style="font-size:1rem; color:var(--text3)">/mo</span></h2>
-        <ul style="list-style:none; line-height:2; color:var(--text2); margin-bottom:30px;">
-          <li>✓ Everything in Pro</li>
-          <li style="color:var(--lime)">✓ Advanced Gemini Chat Tutor</li>
-          <li style="color:var(--lime)">✓ Auto-Sync Offline Downloads</li>
-          <li style="color:var(--lime)">✓ Custom Mock Test Generator</li>
-        </ul>
-        <button class="btn btn-primary" style="width:100%; background:var(--blue);" onclick="selectPlan('Max', 999)">Upgrade to Max</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="auth-overlay" id="payOverlay" style="z-index: 260;">
-  <div class="auth-card">
-    <button class="auth-card-close" onclick="closePayModal()">✕</button>
-    <div style="text-align: center; margin-bottom: 20px;">
-      <span style="font-size: 2rem;">💳</span>
-      <h3 class="auth-title">Secure Checkout</h3>
-    </div>
-    
-    <div style="background: var(--glass); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; justify-content: space-between;">
-      <div><h5 style="color:var(--text3); font-size:0.7rem;">Plan</h5><span id="payPlanName" style="color:var(--blue); font-weight:700;">Pro</span></div>
-      <div style="text-align:right;"><h5 style="color:var(--text3); font-size:0.7rem;">Total</h5><span id="payPlanPrice" style="color:var(--lime); font-size:1.2rem; font-weight:800;">₹499</span></div>
-    </div>
-    
-    <form onsubmit="executePayment(event)">
-      <label style="font-size:0.8rem; color:var(--text2);">UPI ID / Card Number</label>
-      <input type="text" class="auth-input" placeholder="name@upi or 4111 2222..." required>
-      <button type="submit" id="paySubmitBtn" class="auth-btn" style="background:var(--lime); color:var(--bg);">Pay Now</button>
-    </form>
-  </div>
-</div>
-
-<button class="chat-trigger" onclick="toggleChatWindow()">🤖</button>
-<div class="chat-window" id="chatWindow">
-  <div style="padding:16px; background:rgba(0,0,0,0.5); border-bottom:1px solid var(--card-border); display:flex; justify-content:space-between; align-items:center;">
-    <strong style="display:flex; align-items:center; gap:8px;">🤖 Gemini AI Tutor</strong>
-    <button onclick="toggleChatWindow()" style="background:none; border:none; color:var(--text); cursor:pointer;">✕</button>
-  </div>
-  <div class="chat-messages" id="chatMessages">
-    <div class="chat-msg bot"><div class="chat-msg-bubble">Hi! I'm your Gemini AI Tutor. Upgrade to Premium to chat with me about any topic!</div></div>
-  </div>
-  <div class="chat-input-area">
-    <input type="text" class="auth-input" id="chatInput" placeholder="Ask a question..." style="margin:0; flex:1;" onkeydown="if(event.key==='Enter')sendChatMessage()">
-    <button class="auth-btn" style="width:auto; margin:0; padding:10px 16px;" onclick="sendChatMessage()">➤</button>
-  </div>
-</div>
-
-<script>
-function showToast(msg, type = 'success') {
-  const container = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.textContent = msg;
-  container.appendChild(toast);
-  setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 3000);
-}
-
+/* ═══════════════════════════════════════════════════════
+   BUILD UI
+   ═══════════════════════════════════════════════════════ */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-// Powerful generator to simulate massive datasets dynamically based on user prompts.
+// Powerful context-aware generator to simulate massive, highly detailed datasets dynamically.
 function generateExtensiveSyllabus(courseName, topicList) {
   let syllabus = {};
+
+  const domains = [
+    {
+      keys: ['physic', 'mechanic', 'electromagnet', 'quantum', 'thermo', 'optic', 'astrophysic', 'kinematics'],
+      f: ["F = G(m₁m₂)/r² (Newton's Law of Universal Gravitation)", "E = mc² (Mass-Energy Equivalence)", "∮ E·dA = q/ε₀ (Gauss's Law)", "iℏ(∂Ψ/∂t) = ĤΨ (Schrödinger Equation)"],
+      o: "An advanced, rigorous exploration of physical forces, energy states, and the fundamental laws governing the universe.",
+      s1: "Introduction to physical constants, dimensional analysis, theoretical frameworks, and classical boundary conditions.",
+      s2: "<p>Deep dive into mathematical modeling of physical phenomena.</p><ul><li>Wave-particle duality, quantum superposition, and state vectors</li><li>Thermodynamic cycles, entropy, and statistical mechanics</li><li>Maxwell's equations and classical field theory</li></ul>",
+      s3: "Cutting-edge applications in modern engineering, quantum computing, photonics, and cosmology.",
+      qa: [
+        {q:"What is the defining equation for evaluating this physical system?", a:"It is governed by second-order differential equations detailing conservation laws (energy, momentum, mass)."},
+        {q:"How does the Heisenberg Uncertainty Principle apply here?", a:"It establishes a fundamental limit to the precision with which certain pairs of physical properties, like position and momentum, can be known."}
+      ]
+    },
+    {
+      keys: ['chem', 'atom', 'bond', 'organic', 'polymer', 'spectro', 'biochem'],
+      f: ["PV = nRT (Ideal Gas Law)", "pH = pKa + log([A⁻]/[HA]) (Henderson-Hasselbalch Equation)", "ΔG = ΔH - TΔS (Gibbs Free Energy)"],
+      o: "Comprehensive study of molecular composition, complex reaction kinetics, and chemical thermodynamics.",
+      s1: "Atomic structure, periodic trends, stoichiometry, and foundational principles of quantum chemistry.",
+      s2: "<p>Analysis of reaction mechanisms, transition states, and molecular interactions.</p><ul><li>Valence Bond Theory, VSEPR, and Molecular Orbital Theory</li><li>Stereochemistry, chirality, and complex reaction pathways (SN1, SN2, E1, E2)</li><li>Spectroscopic identification methods (NMR, IR, Mass Spectrometry)</li></ul>",
+      s3: "Industrial applications including pharmaceutical synthesis, advanced materials science, and green chemistry protocols.",
+      qa: [
+        {q:"How do reaction kinetics apply in this context?", a:"They dictate the rate, order, and overall yield of the chemical processes under varying temperatures and catalysts."},
+        {q:"Explain the role of a catalyst.", a:"A catalyst lowers the activation energy required for a reaction, increasing the reaction rate without being consumed."}
+      ]
+    },
+    {
+      keys: ['math', 'calculus', 'algebra', 'topology', 'probability', 'discrete', 'geometry', 'equation'],
+      f: ["∫ e^x dx = e^x + C", "e^(iπ) + 1 = 0 (Euler's Identity)", "P(A|B) = P(B|A)P(A)/P(B) (Bayes' Theorem)", "∇²f = 0 (Laplace's Equation)"],
+      o: "Rigorous mathematical analysis, abstract theoretical theorems, and advanced quantitative problem-solving techniques.",
+      s1: "Axiomatic foundations, set theory, propositional logic, and formal proof construction methodologies.",
+      s2: "<p>Exploration of complex functions, analytical geometry, and algebraic structures.</p><ul><li>Limits, continuity, multivariate differentiability, and integration</li><li>Vector spaces, eigenvalues, and linear transformations</li><li>Statistical distributions, combinatorics, and inferential methods</li></ul>",
+      s3: "Critical applications in cryptography, algorithmic optimization, quantitative finance, and machine learning models.",
+      qa: [
+        {q:"What is the primary theorem utilized in this module?", a:"The Fundamental Theorem connecting differentiation and integration, alongside relevant algebraic identities."},
+        {q:"How is this applied in data science?", a:"It forms the mathematical backbone for gradient descent and probabilistic predictive modeling."}
+      ]
+    },
+    {
+      keys: ['bio', 'genetic', 'cell', 'physio', 'microbio', 'immuno', 'botany', 'zoology', 'anatomy'],
+      f: ["6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ (Photosynthesis)", "p² + 2pq + q² = 1 (Hardy-Weinberg Equilibrium)", "dN/dt = rN((K-N)/K) (Logistic Growth)"],
+      o: "Detailed biological analysis covering microscopic cellular structures, genetic inheritance, and macroscopic systemic functions.",
+      s1: "Cellular taxonomy, biomolecular foundations (DNA/RNA/Proteins), cell cycle regulation, and evolutionary theory.",
+      s2: "<p>In-depth study of physiological pathways, molecular genetics, and ecological dynamics.</p><ul><li>Mendelian inheritance patterns and molecular genetics (CRISPR/Cas9)</li><li>Metabolic pathways (Krebs cycle, Glycolysis, Oxidative Phosphorylation)</li><li>Innate and adaptive immune response mechanisms</li></ul>",
+      s3: "Clinical correlations, modern biotechnology, pharmacology, and ecological conservation strategies.",
+      qa: [
+        {q:"Describe the Central Dogma relevant to this topic.", a:"Information flows directionally from DNA to RNA to Protein, ultimately dictating cellular phenotype and function."},
+        {q:"What role do enzymes play in this pathway?", a:"They act as biological catalysts, highly specific to their substrates, tightly regulating metabolic flux."}
+      ]
+    },
+    {
+      keys: ['history', 'polity', 'sociology', 'culture', 'geography', 'constitution', 'art', 'english', 'journalism'],
+      f: [],
+      o: "Critical analysis of human societies, historical timelines, political structures, literature, and geographic phenomena.",
+      s1: "Primary source analysis, historical context, philosophical foundations, and fundamental sociological theories.",
+      s2: "<p>Deep examination of socio-political dynamics, structural changes, and human expression.</p><ul><li>Constitutional frameworks, jurisprudence, and democratic governance</li><li>Demographic shifts, cultural evolution, and post-colonial literature</li><li>Geomorphology, climate patterns, and human-environment interaction</li></ul>",
+      s3: "Contemporary relevance: Public policy making, international relations, urban planning, and modern media ethics.",
+      qa: [
+        {q:"How did this historical/political event shape modern structures?", a:"It established the legal precedents, geographical borders, and cultural norms that define current administrative and social systems."},
+        {q:"What is the primary methodological approach used here?", a:"Qualitative analysis combining archival research, ethnographic studies, and comparative literary criticism."}
+      ]
+    },
+    {
+      keys: ['account', 'finance', 'business', 'commerce', 'tax', 'audit', 'marketing', 'bba', 'mba', 'management'],
+      f: ["Assets = Liabilities + Equity (Accounting Equation)", "ROI = (Net Profit / Cost of Investment) × 100", "WACC = (E/V)×Re + (D/V)×Rd×(1-Tc)"],
+      o: "Core business administration concepts, advanced financial compliance, corporate strategy, and market dynamics.",
+      s1: "Introduction to business ethics, basic accounting principles (GAAP/Ind AS/IFRS), and macro/micro economic fundamentals.",
+      s2: "<p>Advanced corporate financial modeling, supply chain logistics, and strategic management.</p><ul><li>Double-entry bookkeeping, ledger analysis, and cash flow forecasting</li><li>Consumer behavior psychology, digital marketing, and the 4 Ps</li><li>Corporate taxation, statutory auditing, and risk management</li></ul>",
+      s3: "Corporate governance, scaling startup ecosystems, venture capital, and international trade applications.",
+      qa: [
+        {q:"What is the principle of dual aspect in this context?", a:"Every financial transaction has equal and opposite effects in at least two different accounts, maintaining ledger balance."},
+        {q:"How does elasticity affect this market strategy?", a:"It determines how sensitive consumer demand is to price changes, directly impacting revenue optimization."}
+      ]
+    },
+    {
+      keys: ['computer', 'software', 'data', 'algo', 'network', 'web', 'cyber', 'machine', 'ai', 'it'],
+      f: ["O(n log n) (Optimal Comparison Sort Time Complexity)", "T(n) = aT(n/b) + f(n) (Master Theorem)", "y = σ(w^T x + b) (Neural Net Activation)"],
+      o: "In-depth computer science principles covering software engineering, system architecture, and advanced algorithmic design.",
+      s1: "Computational thinking, memory management (heap vs stack), discrete math, and programming language paradigms (OOP, Functional).",
+      s2: "<p>Implementation of advanced algorithms, robust data systems, and network protocols.</p><pre><code>// Asynchronous Data Pipeline Concept\nasync function processStream(dataStream) {\n  const results = [];\n  for await (const chunk of dataStream) {\n    if (chunk.isValid) results.push(await transform(chunk));\n  }\n  return results;\n}</code></pre><ul><li>Time & Space Complexity analysis (Big-O, Omega, Theta)</li><li>Relational (ACID) and NoSQL (BASE) database design and normalization</li><li>Network protocols (TCP/IP, HTTP/3), cryptography, and cybersecurity</li></ul>",
+      s3: "Enterprise scalable software development, CI/CD pipelines, cloud computing orchestration, and LLM/AI model training.",
+      qa: [
+        {q:"How does this algorithm optimize processing?", a:"By reducing redundant iterations, utilizing memoization, and leveraging advanced data structures like Hash Maps or AVL Trees."},
+        {q:"Explain the CAP theorem in this context.", a:"A distributed data store can simultaneously provide at most two out of three guarantees: Consistency, Availability, and Partition tolerance."}
+      ]
+    },
+    {
+      keys: ['civil', 'mech', 'circuit', 'signal', 'vlsi', 'manufacturing', 'struct', 'fluid'],
+      f: ["σ = F/A (Stress Equation)", "V = IR (Ohm's Law)", "Q = mcΔT (Specific Heat)", "τ = μ(du/dy) (Newton's Law of Viscosity)"],
+      o: "Rigorous engineering principles applied to material sciences, structural integrity, and complex system dynamics.",
+      s1: "Statics, dynamics, material properties, thermodynamics, and fundamental electrical/magnetic laws.",
+      s2: "<p>Engineering design, analytical problem solving, and computational simulation.</p><ul><li>Stress-strain analysis, shear force, and bending moment diagrams</li><li>Circuit design, digital logic, and analog signal processing</li><li>Thermodynamics, fluid mechanics, and heat transfer mechanisms</li></ul>",
+      s3: "CAD/CAM applications, large-scale infrastructure development, robotics, and industrial automation (Industry 4.0).",
+      qa: [
+        {q:"What is the failure criterion for this material/system?", a:"It is determined by the yield stress (Von Mises/Tresca) or the thermal breakdown threshold of the specific alloy/component."},
+        {q:"How is system resonance mitigated?", a:"Through the application of tuned mass dampers, structural stiffening, or active electronic filtering."}
+      ]
+    },
+    {
+      keys: ['medical', 'mbbs', 'pathology', 'pharma', 'surgery', 'nursing', 'forensic', 'health'],
+      f: ["Cl = Rate of elimination / Plasma concentration", "Vd = Amount of drug in body / Plasma drug concentration", "CO = HR × SV (Cardiac Output)"],
+      o: "Comprehensive medical sciences covering human anatomy, disease pathology, diagnostics, and pharmacological interventions.",
+      s1: "Gross human anatomy, histological foundations, embryology, and basic physiological mechanisms of homeostasis.",
+      s2: "<p>Clinical pathology, evidence-based medicine, and systemic disease management.</p><ul><li>Pathophysiology of major organ systems (Cardio, Neuro, Renal, Respiratory)</li><li>Pharmacokinetics (ADME) and pharmacodynamics of essential drugs</li><li>Diagnostic imaging (MRI/CT/X-Ray) and laboratory assay interpretations</li></ul>",
+      s3: "Clinical ward rotations, modern surgical techniques, triage protocols, and comprehensive patient care management.",
+      qa: [
+        {q:"What is the primary mechanism of action for this pharmacological agent?", a:"It competitively inhibits specific enzyme pathways, thereby reducing the synthesis of inflammatory mediators."},
+        {q:"What constitutes a differential diagnosis in this scenario?", a:"Systematically ruling out conditions presenting with similar symptomology based on lab results and clinical presentation."}
+      ]
+    },
+    {
+      keys: ['agri', 'rural', 'soil', 'crop', 'khomne', 'horticulture'],
+      f: ["Yield = (Plants/ha) × (Ears/plant) × (Grain weight)", "NFR = (N applied - N taken up) / N applied"],
+      o: "Agricultural sciences detailing crop production optimization, soil health management, and rural socio-economic frameworks.",
+      s1: "Soil composition and pedology, agro-climatology, and basic agronomic principles for maximizing yield.",
+      s2: "<p>Modern high-efficiency farming techniques and rural development models.</p><ul><li>Integrated pest management (IPM) and plant pathology</li><li>Advanced irrigation scheduling and sustainable crop rotation</li><li>Khomne frameworks for rural sociology and village economics</li></ul>",
+      s3: "Sustainable precision agriculture, agribusiness supply chains, cooperative farming models, and government policy impacts.",
+      qa: [
+        {q:"How does soil pH affect macronutrient availability?", a:"Extreme pH levels lock up essential nutrients (like Phosphorus and Nitrogen), necessitating precise soil amendments like liming."},
+        {q:"Explain the core tenet of the Khomne rural model.", a:"It emphasizes localized resource management and cooperative micro-financing to build self-sustaining village economies."}
+      ]
+    }
+  ];
+
+  topicList.forEach((ch, idx) => {
+    let match = domains.find(d => d.keys.some(k => ch.toLowerCase().includes(k)));
+    if (!match) {
+       // Highly detailed fallback
+       match = {
+         f: [`Result = Σ(Contextual Variables × Theoretical Weights)`],
+         o: `Detailed academic and practical exploration of <strong>${ch}</strong> specifically aligned with national ${courseName} university standards.`,
+         s1: `Introduction to the foundational principles, historical evolution, and core terminology of ${ch}. Establishing a strong conceptual framework is critical for mastering advanced topics within the ${courseName} curriculum.`,
+         s2: `<p>In-depth, structured analysis of the primary mechanisms governing ${ch}.</p><ul><li>Core typologies, models, and analytical frameworks</li><li>Evolution of paradigms over time and current consensus</li><li>Primary theoretical frameworks utilized by leading academics</li></ul>`,
+         s3: `How ${ch} translates from textbook theory into dynamic, real-world applications within the contemporary professional landscape across India and globally.`,
+         qa: [{q: `Explain the fundamental paradigm shift introduced by ${ch}.`, a: `It shifted the focus toward a more integrated, systemic understanding, which is essential for solving complex modern problems in the field.`}]
+       };
+    }
+
+    syllabus[ch] = {
+      overview: `<strong>Module Overview:</strong> ${match.o}`,
+      sections: [
+        { title: `1. Foundations & Theoretical Context`, content: `<p>${match.s1}</p>` },
+        { title: `2. Core Concepts, Mechanisms & Analysis`, content: match.s2 },
+        { title: `3. Applied Scenarios & Industry/Academic Relevance`, content: `<p>${match.s3}</p>` }
+      ],
+      keyFormulas: match.f,
+      reviewQuestions: match.qa
+    };
+  });
+  return syllabus;
+}
+
+window.SCIENCE_CONTENT = {
+  "B.Sc Physics": { icon: "⚛️", color: "#00CFFF", description: "Mechanics, Electromagnetism, Quantum Mechanics.", topics: generateExtensiveSyllabus("B.Sc Physics", ["Classical Mechanics", "Electromagnetism", "Quantum Physics", "Thermodynamics", "Statistical Mechanics", "Solid State Physics", "Nuclear Physics", "Optics", "Acoustics", "Astrophysics"]) },
+  "B.Sc Chemistry": { icon: "🧪", color: "#C8FF00", description: "Organic, Inorganic, and Physical Chemistry.", topics: generateExtensiveSyllabus("B.Sc Chemistry", ["Atomic Structure", "Chemical Bonding", "Organic Reaction Mechanisms", "Thermodynamics", "Coordination Chemistry", "Spectroscopy", "Electrochemistry", "Polymer Chemistry", "Biochemistry"]) },
+  "B.Sc Mathematics": { icon: "📐", color: "#FF2D87", description: "Calculus, Algebra, and Differential Equations.", topics: generateExtensiveSyllabus("B.Sc Math", ["Real Analysis", "Abstract Algebra", "Differential Equations", "Linear Algebra", "Complex Analysis", "Topology", "Numerical Methods", "Probability Theory", "Discrete Mathematics"]) },
+  "B.Sc Biology": { icon: "🧬", color: "#9D4EDD", description: "Cell Biology, Genetics, and Physiology.", topics: generateExtensiveSyllabus("B.Sc Biology", ["Cell Biology", "Genetics", "Evolutionary Biology", "Human Physiology", "Plant Physiology", "Ecology", "Microbiology", "Biotechnology", "Immunology"]) }
+};
+
+window.HUMANITIES_CONTENT = {
+  "B.A History": { icon: "📜", color: "#FF6B35", description: "Ancient, Medieval, and Modern History.", topics: generateExtensiveSyllabus("B.A History", ["Ancient Indian History", "Medieval India", "Modern Indian History", "World History: 20th Century", "European History", "Post-Independence India", "Historiography"]) },
+  "B.A Political Science": { icon: "🏛️", color: "#00CFFF", description: "Political Theory and International Relations.", topics: generateExtensiveSyllabus("B.A Pol Science", ["Political Theory", "Indian Constitution", "Comparative Politics", "International Relations", "Public Administration", "Western Political Thought", "Indian Political Thought"]) },
+  "B.A Sociology": { icon: "👥", color: "#C8FF00", description: "Society, Culture, and Social Institutions.", topics: generateExtensiveSyllabus("B.A Sociology", ["Intro to Sociology", "Social Institutions", "Sociological Thinkers", "Research Methodology", "Social Stratification", "Indian Society", "Gender Studies"]) },
+  "B.A English": { icon: "🖋️", color: "#FF2D87", description: "British, American, and Indian Literature.", topics: generateExtensiveSyllabus("B.A English", ["British Poetry", "British Drama", "American Literature", "Indian Writing in English", "Literary Theory", "Postcolonial Literature", "Linguistics"]) },
+  "B.A Geography": { icon: "🌍", color: "#20B2AA", description: "Physical, Human, and Economic Geography.", topics: generateExtensiveSyllabus("B.A Geography", ["Geomorphology", "Climatology", "Human Geography", "Economic Geography", "Geography of India", "Cartography", "Environmental Geography"]) },
+  "B.A Psychology": { icon: "🧠", color: "#9D4EDD", description: "Cognitive, Clinical, and Social Psychology.", topics: generateExtensiveSyllabus("B.A Psychology", ["General Psychology", "Developmental Psychology", "Social Psychology", "Abnormal Psychology", "Research Methods", "Cognitive Psychology"]) }
+};
+
+window.COMMERCE_CONTENT = {
+  "B.Com (General/Hons)": { icon: "📊", color: "#FFD700", description: "Accounting, Business Law, and Taxation.", topics: generateExtensiveSyllabus("B.Com", ["Financial Accounting", "Corporate Accounting", "Business Law", "Company Law", "Income Tax Law & Practice", "Cost Accounting", "Auditing & Corporate Governance", "Management Accounting"]) },
+  "BBA (Business Admin)": { icon: "👔", color: "#FF6B35", description: "Management Principles, Marketing, and HR.", topics: generateExtensiveSyllabus("BBA", ["Principles of Management", "Business Economics", "Marketing Management", "Human Resource Management", "Financial Management", "Organizational Behavior", "Business Ethics", "Strategic Management", "Operations Research"]) },
+  "B.Com Banking & Insurance": { icon: "🏦", color: "#9D4EDD", description: "Financial Markets and Banking Operations.", topics: generateExtensiveSyllabus("B.Com Banking", ["Indian Financial System", "Principles of Banking", "Insurance Management", "Central Banking", "Financial Markets", "Risk Management"]) },
+  "CA Foundation / CMA": { icon: "🖋️", color: "#C8FF00", description: "Chartered Accountancy Base Curriculum.", topics: generateExtensiveSyllabus("CA Foundation", ["Principles and Practice of Accounting", "Business Laws", "Business Correspondence", "Business Mathematics", "Logical Reasoning", "Statistics", "Business Economics"]) }
+};
+
+window.TECH_CONTENT = {
+  "B.Tech Computer Science": { icon: "💻", color: "#00CFFF", description: "DSA, OS, DBMS, Networks, and AI.", topics: generateExtensiveSyllabus("B.Tech CSE", ["Data Structures & Algorithms", "Operating Systems", "Database Management Systems", "Computer Networks", "Theory of Computation", "Compiler Design", "Artificial Intelligence", "Machine Learning", "Software Engineering", "Cryptography"]) },
+  "BCA (Computer Apps)": { icon: "🖥️", color: "#C8FF00", description: "Programming in C/C++, Java, Web Dev.", topics: generateExtensiveSyllabus("BCA", ["C Programming", "Object Oriented Programming (C++)", "Java Programming", "Web Technologies (HTML/CSS/JS)", "Software Engineering", "DBMS Basics", "Python Programming", "Computer Architecture"]) },
+  "B.Tech Electronics (ECE)": { icon: "🔌", color: "#FF2D87", description: "Circuits, Signals, Microprocessors.", topics: generateExtensiveSyllabus("B.Tech ECE", ["Network Theory", "Analog Circuits", "Digital Electronics", "Signals & Systems", "Microprocessors & Microcontrollers", "VLSI Design", "Control Systems", "Communication Systems"]) },
+  "B.Tech Mechanical": { icon: "⚙️", color: "#FF6B35", description: "Thermodynamics, Fluid Mechanics, Kinematics.", topics: generateExtensiveSyllabus("B.Tech ME", ["Engineering Mechanics", "Thermodynamics", "Fluid Mechanics", "Strength of Materials", "Kinematics of Machinery", "Heat Transfer", "Manufacturing Processes", "CAD/CAM"]) },
+  "B.Tech Civil": { icon: "🏗️", color: "#FFD700", description: "Structures, Geotech, Environmental Eng.", topics: generateExtensiveSyllabus("B.Tech Civil", ["Structural Analysis", "Geotechnical Engineering", "Fluid Mechanics", "Transportation Engineering", "Environmental Engineering", "Surveying", "Concrete Technology"]) }
+};
+
+window.COMPETITIVE_CONTENT = {
+  "UPSC Civil Services": { icon: "🇮🇳", color: "#FFD700", description: "Polity, History, Geography, Economy.", topics: generateExtensiveSyllabus("UPSC", ["Indian Polity", "History of India", "Geography", "Indian Economy", "Environment & Ecology", "General Science", "Current Affairs", "Ethics, Integrity and Aptitude", "International Relations"]) },
+  "SSC CGL / Bank PO": { icon: "📈", color: "#20B2AA", description: "Aptitude, Reasoning, English.", topics: generateExtensiveSyllabus("SSC", ["Quantitative Aptitude", "Logical Reasoning", "Data Interpretation", "English Comprehension", "General Awareness", "Banking Awareness", "Static GK"]) },
+  "JEE / NEET Prep": { icon: "🔬", color: "#FF2D87", description: "Advanced Physics, Chem, Math, Bio.", topics: generateExtensiveSyllabus("JEE/NEET", ["Physics Mechanics", "Physics Electrodynamics", "Physics Modern", "Chemistry Physical", "Chemistry Organic", "Chemistry Inorganic", "Mathematics Calculus", "Mathematics Algebra", "Biology Botany", "Biology Zoology"]) },
+  "GATE (Engineering)": { icon: "⚙️", color: "#9D4EDD", description: "Graduate Aptitude Test in Engineering.", topics: generateExtensiveSyllabus("GATE", ["Engineering Mathematics", "General Aptitude", "Core Subject Specialization (e.g. CS, ME, CE, EE)"]) },
+  "CAT / MAT (MBA Prep)": { icon: "📊", color: "#FF6B35", description: "Management Entrance Exams.", topics: generateExtensiveSyllabus("CAT", ["Quantitative Ability (QA)", "Verbal Ability & Reading Comprehension (VARC)", "Data Interpretation & Logical Reasoning (DILR)"]) }
+};
+
+window.UNDERGRAD_CONTENT = {
+  ...window.SCIENCE_CONTENT,
+  ...window.HUMANITIES_CONTENT,
+  ...window.COMMERCE_CONTENT,
+  ...window.TECH_CONTENT,
+  "MBBS (Medical)": { icon: "⚕️", color: "#FF4757", description: "Anatomy, Physiology, Pathology, Pharmacology.", topics: generateExtensiveSyllabus("MBBS", ["Human Anatomy", "Physiology", "Biochemistry", "Pathology", "Pharmacology", "Microbiology", "Forensic Medicine", "Community Medicine", "Ophthalmology", "ENT", "General Medicine", "Surgery"]) },
+  "LLB (Law)": { icon: "⚖️", color: "#9D4EDD", description: "Constitutional Law, IPC, Contract Law.", topics: generateExtensiveSyllabus("LLB", ["Constitutional Law of India", "Law of Contracts", "Indian Penal Code (IPC)", "Criminal Procedure Code (CrPC)", "Corporate Law", "Family Law", "Law of Torts", "Property Law", "Evidence Act"]) },
+  "B.Sc Agriculture / Rural Studies": { icon: "🌾", color: "#C8FF00", description: "Agronomy, Soil Science, Rural Development (Khomne frameworks).", topics: generateExtensiveSyllabus("B.Sc Agriculture", ["Agronomy", "Soil Science", "Agricultural Economics", "Rural Sociology (Khomne Models)", "Plant Pathology", "Horticulture", "Agricultural Extension", "Entomology", "Genetics & Plant Breeding"]) },
+  "B.Arch (Architecture)": { icon: "🏛️", color: "#00CFFF", description: "Design, Building Construction, History.", topics: generateExtensiveSyllabus("B.Arch", ["Architectural Design", "Building Construction", "History of Architecture", "Theory of Structures", "Building Services", "Town Planning"]) },
+  // Extensive Additions based on Indian Curriculum
+  "B.Sc Nursing": { icon: "🏥", color: "#FF2D87", description: "Fundamentals of Nursing, Anatomy, Midwifery.", topics: generateExtensiveSyllabus("B.Sc Nursing", ["Anatomy & Physiology", "Nutrition & Biochemistry", "Nursing Foundations", "Psychology", "Microbiology", "Medical-Surgical Nursing", "Child Health Nursing", "Mental Health Nursing", "Midwifery & Obstetrical Nursing"]) },
+  "B.Pharma (Pharmacy)": { icon: "💊", color: "#20B2AA", description: "Pharmaceutics, Pharmacology, Pharmacognosy.", topics: generateExtensiveSyllabus("B.Pharma", ["Human Anatomy and Physiology", "Pharmaceutical Analysis", "Pharmaceutics", "Pharmaceutical Inorganic Chemistry", "Communication skills", "Remedial Biology/Mathematics", "Biochemistry", "Pathophysiology", "Computer Applications in Pharmacy"]) },
+  "B.Des (Design)": { icon: "🎨", color: "#FF6B35", description: "Industrial, Communication, and Fashion Design.", topics: generateExtensiveSyllabus("B.Des", ["Design Fundamentals", "Drawing & Sketching", "Color Theory", "Material Explorations", "Design Thinking", "History of Design", "Digital Design Tools", "Typography", "Photography"]) },
+  "BHM (Hotel Management)": { icon: "🏨", color: "#FFD700", description: "Food Production, F&B Service, Front Office.", topics: generateExtensiveSyllabus("BHM", ["Food Production Foundation", "Food & Beverage Service", "Front Office Operations", "Accommodation Operations", "Hotel Engineering", "Principles of Management", "Accounting for Managers"]) },
+  "B.A Journalism & Mass Comm": { icon: "🎙️", color: "#00CFFF", description: "Media Studies, Reporting, Editing, PR.", topics: generateExtensiveSyllabus("BJMC", ["Introduction to Journalism", "Media History", "Reporting and Editing", "Media Law and Ethics", "Broadcast Journalism", "Public Relations", "Advertising", "Digital Media", "Photojournalism"]) },
+  "B.Sc Forensic Science": { icon: "🔍", color: "#9D4EDD", description: "Crime Scene Investigation, Forensic Toxicology.", topics: generateExtensiveSyllabus("B.Sc Forensic", ["Introduction to Forensic Science", "Crime Scene Management", "Forensic Physics", "Forensic Chemistry", "Forensic Biology", "Forensic Toxicology", "Fingerprint Analysis", "Questioned Documents", "Cyber Forensics"]) },
+  "B.Ed (Education)": { icon: "👨‍🏫", color: "#FF6B35", description: "Pedagogy, Child Development, Teaching Methods.", topics: generateExtensiveSyllabus("B.Ed", ["Childhood and Growing Up", "Contemporary India and Education", "Learning and Teaching", "Language across the Curriculum", "Understanding Disciplines and Subjects", "Gender, School and Society", "Pedagogy of School Subject"]) }
+};
+
+window.POSTGRAD_CONTENT = {
+  "MBA (Business Admin)": { icon: "📈", color: "#FFD700", description: "Strategic Management, Corporate Finance.", topics: generateExtensiveSyllabus("MBA", ["Strategic Management", "Corporate Finance", "Consumer Behavior", "Operations Management", "Business Analytics", "Supply Chain Management", "Leadership & Ethics", "International Business", "Managerial Economics"]) },
+  "M.Tech Computer Science": { icon: "🤖", color: "#00CFFF", description: "Advanced Algorithms, Machine Learning.", topics: generateExtensiveSyllabus("M.Tech CSE", ["Advanced Algorithms", "Machine Learning & Pattern Recognition", "Cloud Computing", "Cryptography & Network Security", "Big Data Analytics", "Distributed Systems", "Natural Language Processing"]) },
+  "M.A Economics": { icon: "📉", color: "#FF6B35", description: "Microeconomics, Macroeconomics, Econometrics.", topics: generateExtensiveSyllabus("M.A Economics", ["Advanced Microeconomics", "Advanced Macroeconomics", "Econometrics", "Public Economics", "International Trade", "Development Economics", "Monetary Economics"]) },
+  "LLM (Master of Laws)": { icon: "⚖️", color: "#9D4EDD", description: "Advanced Constitutional Law, International Law.", topics: generateExtensiveSyllabus("LLM", ["Jurisprudence", "International Human Rights", "Advanced Constitutional Law", "Intellectual Property Rights", "Environmental Law", "Corporate Governance"]) },
+  "M.Sc Data Science": { icon: "📊", color: "#C8FF00", description: "Statistics, Big Data, Predictive Modeling.", topics: generateExtensiveSyllabus("M.Sc Data Science", ["Probability and Statistics", "Data Mining", "Predictive Modeling", "Deep Learning", "Big Data Technologies (Hadoop/Spark)", "Data Visualization"]) },
+  // Extensive Postgrad Additions
+  "MCA (Computer Applications)": { icon: "💻", color: "#00CFFF", description: "Software Development, Systems, AI.", topics: generateExtensiveSyllabus("MCA", ["Advanced Database Management", "Java Programming", "Software Engineering", "Web Technologies", "Python and Data Analytics", "Cloud Computing", "AI and Expert Systems", "Mobile Application Development"]) },
+  "M.Pharma": { icon: "💊", color: "#20B2AA", description: "Advanced Pharmacology, Pharmaceutics.", topics: generateExtensiveSyllabus("M.Pharma", ["Modern Pharmaceutical Analytical Techniques", "Drug Delivery Systems", "Modern Pharmaceutics", "Regulatory Affairs", "Pharmacokinetics", "Clinical Research", "Toxicology"]) },
+  "M.A History": { icon: "📜", color: "#FF6B35", description: "Ancient, Medieval, Modern History.", topics: generateExtensiveSyllabus("M.A History", ["Historiography", "Ancient Indian History", "Medieval Indian History", "Modern Indian History", "World History", "History of Science and Technology", "Economic History of India"]) },
+  "M.A English": { icon: "🖋️", color: "#FF2D87", description: "British, American, Postcolonial Literature.", topics: generateExtensiveSyllabus("M.A English", ["Chaucer to Milton", "Shakespeare", "Victorian Literature", "Modern British Literature", "American Literature", "Indian Writing in English", "Literary Theory and Criticism", "Postcolonial Literature"]) },
+  "M.A Khomne Studies / Rural Dev": { icon: "🌾", color: "#C8FF00", description: "Advanced Rural Sociology, Agri-Economics.", topics: generateExtensiveSyllabus("M.A Rural Dev", ["Theories of Rural Development", "Rural Economy of India", "Panchayati Raj Institutions", "Rural Sociology (Khomne Models)", "Research Methodology", "Rural Project Management", "NGO Management"]) },
+  "M.Des (Master of Design)": { icon: "🎨", color: "#9D4EDD", description: "Advanced Design Research, UX/UI, Product Design.", topics: generateExtensiveSyllabus("M.Des", ["Design Research Methodology", "Interaction Design", "Product Semantics", "System Design", "Ergonomics", "Design Management", "Sustainable Design"]) },
+  "M.Ed (Master of Education)": { icon: "👨‍🏫", color: "#FF2D87", description: "Advanced Pedagogy, Educational Psychology.", topics: generateExtensiveSyllabus("M.Ed", ["Philosophy of Education", "Psychology of Learning", "Methodology of Educational Research", "Teacher Education", "Educational Technology", "Curriculum Studies", "Inclusive Education"]) }
+};
   topicList.forEach((ch, idx) => {
     syllabus[ch] = {
       overview: `Detailed academic exploration of ${ch} designed for ${courseName} standards in India. This module synthesizes theoretical frameworks, practical industry applications, and competitive exam priorities, ensuring complete coverage.`,
