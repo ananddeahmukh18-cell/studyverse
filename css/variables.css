@@ -1,0 +1,67 @@
+:root {
+  /* Colors */
+  --lime: #C8FF00;
+  --pink: #FF2D87;
+  --blue: #00CFFF;
+  --purple: #9D4EDD;
+  --orange: #FF6B35;
+  --gold: #FFD700;
+  --teal: #20B2AA;
+  --red: #FF4757;
+
+  /* Backgrounds */
+  --bg: #060610;
+  --bg2: #0C0C1D;
+  --bg3: #12122A;
+  --bg4: #1A1A36;
+
+  /* Cards & Glass */
+  --card: rgba(255, 255, 255, 0.035);
+  --card-hover: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.1);
+
+  /* Text */
+  --text: #FFFFFF;
+  --text2: rgba(255, 255, 255, 0.65);
+  --text3: rgba(255, 255, 255, 0.35);
+
+  /* Spacing & Radius */
+  --radius: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+
+  /* Effects */
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Fonts */
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-head: 'Bricolage Grotesque', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Selection */
+::selection {
+  background: var(--purple);
+  color: #fff;
+}
